@@ -138,6 +138,7 @@
       	- `Destination` = [`internet_ipv4`](#FW-Alias1)
       	- click `Save`
     - clone the above created rule [¹³](#13)
+        - disable/uncheck `Destination/Invert` 
         - replace `internet_ipv4` in `Destination` with `LAN net`
 
 ---
