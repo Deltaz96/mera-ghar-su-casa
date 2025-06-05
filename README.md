@@ -137,6 +137,8 @@
       	- enable/check `Destination/Invert` 
       	- `Destination` = [`internet_ipv4`](#FW-Alias1)
       	- click `Save`
+    - clone the above created rule [¹³](#13)
+        - replace `internet_ipv4` in `Destination` with `LAN net`
 
 ---
 <a id="1"></a>¹ Breaks opnsense's interfaces sometimes<br>
@@ -150,4 +152,5 @@
 <a id="9"></a>⁹ Recommended by IPsec.<br>
 <a id="10"></a>¹⁰ Recommended by Apple.<br>
 <a id="11"></a>¹¹ Select the Cert created for IPsec in point 6.<br>
-<a id="12"></a>¹² Press enter after each entry.
+<a id="12"></a>¹² Press enter after each entry.<br>
+<a id="13"></a>¹³ if you want to give `ipsec interface` access to `LAN interface`.
