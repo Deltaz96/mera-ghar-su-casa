@@ -1,9 +1,46 @@
-# HOW TO SET UP IPSEC IKEV2 ON OPNSENSE IN AWS
+# OPNsense IPsec IKEv2 Road Warrior Setup on AWS
+
+This project documents the setup of **OPNsense** as a virtual firewall/router within the **AWS cloud environment**, designed to securely provide **IPsec IKEv2 Road Warrior VPN** access with modern encryption and authentication practices.
+
+> 🏠 **Note:** While this guide focuses on AWS deployment, the configuration and steps are equally applicable to **homelab** environments — whether running OPNsense on bare metal, virtual machines (Proxmox), or mini-PCs.
+
+## Features
+
+- 🛡️ **OPNsense on AWS**  
+  Deploy and configure OPNsense on an EC2 instance, with proper networking.
+
+- 🔐 **Let's Encrypt SSL Certificates**  
+  Automatically issue and renew certificates via the built-in **ACME client** for IPsec authentication.
+
+- 🌐 **IPsec IKEv2 Road Warrior VPN**  
+  Set up a strongSwan-based IKEv2 VPN server for secure remote access across devices (macOS, iOS, Android, Linux).<br>
+    (unfortunately it also works on windows).
+
+- 🔥 **Firewall Rules for IPsec**  
+  Define granular rules to control and secure access between VPN clients.
+
+## Use Case
+
+Ideal for individuals or small teams looking to deploy a scalable, secure, and certificate-based VPN solution in the cloud using open-source tools.
+
+## 🎯 Goal
+
+The goal of this project is to create a **secure, reliable, and scalable VPN access point** using OPNsense and IPsec IKEv2, suitable for both **cloud-based (AWS)** and **homelab** environments.
+
+Specifically, this setup aims to:
+
+- Enable **remote access** to internal resources through a **certificate-based IPsec IKEv2 VPN**.
+- Leverage **Let's Encrypt** to automate secure certificate issuance via OPNsense's ACME client.
+- Harden the deployment with **firewall rules** to strictly control VPN access.
+- Offer a reproducible, documented configuration that can serve as a base for both personal and small team deployments.
+
+This provides a modern alternative to traditional OpenVPN or L2TP setups, offering improved compatibility, performance, and security — especially on mobile and modern OS platforms.
+
 
 ## Start an instance with
 1. OPNsense OS.
 2. set a key pair.
-3. in network you need to configure to open these ports according to your needs
+3. in network, you need to configure to open these ports according to your needs
     - `22` TCP (ssh)
     - `80` TCP (HTTP)
     - `443` TCP (HTTPS)
@@ -18,7 +55,7 @@
     - `Hostname:`
 	- `Domain:`
     - `Timezone:`
-3. Go to `Interfaces: [WAN]` (most likely auto configured in AWS, but still check)
+3. Go to `Interfaces: [WAN]` (most likely autoconfigured in AWS, but still check)
 4. Go to `System: Firmware`
     - update OPNsense to latest and then reboot
     - install plugin `os-acme-client`
@@ -44,14 +81,14 @@
     - add a cert request.
 		- in `Common Name` add the FQDN for this instance. 
         - example `opnsense.lab.com`. [⁵](#5)
-      	- Change rest according to your needs
-    - clone the above created cert request
+      	- Change the rest according to your needs
+    - clone the above-created cert request
     	- in `Common Name` replace with what you prefer. 
         - example `ipsec.lab.com`. [⁶](#6)
 5. Go to `System: Settings: Administration`
     - in `SSL Certificate` select the certificate for web UI created `opnsense.lab.com` 
 
-## Set up ipsec ikev2 ##
+## Set up ipsec IKEv2 ##
 1. Go to `VPN: IPsec: Pre-Shared Keys`
     - create user
       	- `Local Identifier` = username
@@ -90,7 +127,7 @@
         - `Description` = name this `Local Authentication`
         - click `save`
     - In `Remote Authentication`, create new
-        - `Authentication` = `EAO-MSCHAPv2`
+        - `Authentication` = `EAP-MSCHAPv2`
         - `EAP id` = `%any`
         - `Description` = name this `Remote Authentication`
         - click `save`
@@ -110,7 +147,7 @@
       	- `type` = `Network(s)`
       	- `content` = `10.0.0.0/8` `172.16.0.0/12` `192.168.0.0/16` `127.0.0.0/8` [¹²](#12)
       	- Description = `IPsec-use as inverted`
-    - add second alias
+    - add a second alias
     	- `Name` = `ipsec_ports`<a id="FW-Alias2"></a>
       	- `type` = `Port(s)`
       	- `content` = `500` `4500` [¹²](#12)
@@ -137,14 +174,14 @@
       	- enable/check `Destination/Invert` 
       	- `Destination` = [`internet_ipv4`](#FW-Alias1)
       	- click `Save`
-    - clone the above created rule [¹³](#13)
+    - clone the above-created rule [¹³](#13)
         - disable/uncheck `Destination/Invert` 
         - replace `internet_ipv4` in `Destination` with `LAN net`
 
 ---
 <a id="1"></a>¹ Breaks opnsense's interfaces sometimes<br>
 <a id="2"></a>² Used for debugging of `Acme client`<br>
-<a id="3"></a>³ i am using AWS route53 for this.<br>
+<a id="3"></a>³ I am using AWS route53 for this.<br>
 <a id="4"></a>⁴ needed to be made from AWS - `iam` with access to the hosted zone of domain.<br> 
 <a id="5"></a>⁵ This Cert is for Web UI. Needs `A` record in `route53`.<br>
 <a id="6"></a>⁶ This Cert is for IPsec. Needs `A` record in `route53`.<br>
@@ -155,3 +192,8 @@
 <a id="11"></a>¹¹ Select the Cert created for IPsec in point 6.<br>
 <a id="12"></a>¹² Press enter after each entry.<br>
 <a id="13"></a>¹³ if you want to give `ipsec interface` access to `LAN interface`.
+
+
+
+Reference <br>
+https://docs.opnsense.org/manual/how-tos/ipsec-swanctl-rw-ikev2-eap-mschapv2.html
