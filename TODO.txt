@@ -1,0 +1,15 @@
+ACME
+- update specific cert (something updated and broke the old setup)
+
+IPsec IKEv2
+- update Connection 'proposals' (the old encryption one was cpu heavy, not optimised for weaker devices)
+- update rekey time (i guess!!)
+- update all time based auth requirments
+- in `Children` update same proposals as used in Connection
+  - upadte time based auth everywhere
+
+FIREWALL 
+- update all RULES
+
+Terms and Conditions
+- cross check all terminology and facts
